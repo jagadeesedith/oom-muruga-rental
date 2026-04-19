@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<meta name="theme-color" content="#C2410C"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<title>Vessel Rental Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset & Base ─────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Baloo 2',system-ui,sans-serif;background:#FFF8EE;color:#1C1917;overscroll-behavior:none;}
+a{text-decoration:none;color:inherit;}
+input,select,button,textarea{font-family:inherit;}
+button{cursor:pointer;}
+button:active{transform:scale(0.97);}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#EA580C!important;box-shadow:0 0 0 3px rgba(234,88,12,0.14);}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:#FDBA74;border-radius:4px;}
+
+/* ── App Shell ───────────────────────────────────────────── */
+#app{min-height:100vh;background:#FFF8EE;}
+.page{max-width:480px;margin:0 auto;min-height:100vh;background:#FFF8EE;}
+
+/* ── Top Bar ─────────────────────────────────────────────── */
+.topbar{background:#C2410C;color:#fff;padding:13px 14px;display:flex;align-items:center;gap:10px;
+  position:sticky;top:0;z-index:99;box-shadow:0 2px 8px rgba(0,0,0,.18);}
+.topbar-back{background:none;border:none;color:#fff;font-size:28px;padding:0;line-height:1;margin-top:-3px;}
+.topbar-title{flex:1;font-size:17px;font-weight:800;letter-spacing:-.2px;}
+.topbar-action{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:8px;
+  padding:6px 12px;font-weight:700;font-size:13px;}
+
+/* ── Cards ───────────────────────────────────────────────── */
+.card{background:#fff;border-radius:12px;padding:16px;border:1px solid #E7E5E4;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.card-section{margin:12px 12px 0;}
+.card-title{font-weight:800;font-size:15px;color:#C2410C;margin-bottom:14px;}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.btn{border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:700;
+  display:inline-flex;align-items:center;gap:8px;justify-content:center;transition:opacity .15s;}
+.btn:disabled{opacity:.55;cursor:not-allowed;}
+.btn-primary{background:#C2410C;color:#fff;}
+.btn-accent{background:#EA580C;color:#fff;}
+.btn-green{background:#16A34A;color:#fff;}
+.btn-ghost{background:#fff;color:#1C1917;border:1.5px solid #E7E5E4;}
+.btn-sm{padding:8px 13px;font-size:13px;border-radius:9px;}
+.btn-full{width:100%;}
+.btn-wa{background:#25D366;color:#fff;border-radius:10px;padding:12px 20px;font-size:15px;
+  font-weight:700;display:flex;align-items:center;gap:8px;justify-content:center;}
+.btn-wa2{background:#128C7E;color:#fff;border-radius:10px;padding:12px 20px;font-size:15px;
+  font-weight:700;display:flex;align-items:center;gap:8px;justify-content:center;}
+.btn-orange{background:#EA580C;color:#fff;}
+
+/* ── Form ────────────────────────────────────────────────── */
+.lbl{font-size:13px;font-weight:700;color:#78716C;margin-bottom:5px;display:block;letter-spacing:.3px;}
+.inp{width:100%;border:1.5px solid #E7E5E4;border-radius:10px;padding:10px 14px;
+  font-size:15px;background:#FAFAF8;color:#1C1917;}
+.inp-err{border-color:#DC2626!important;}
+.err-msg{color:#DC2626;font-size:12px;margin-top:3px;}
+.field{margin-bottom:13px;}
+.field:last-child{margin-bottom:0;}
+
+/* ── Stats ───────────────────────────────────────────────── */
+.stats-row{display:flex;gap:8px;margin-bottom:12px;}
+.stat-card{background:#fff;border-radius:12px;padding:12px 14px;flex:1;border:1px solid #E7E5E4;min-width:0;}
+.stat-icon{font-size:18px;}
+.stat-val{font-size:21px;font-weight:900;margin-top:2px;}
+.stat-label{font-size:10px;font-weight:800;color:#78716C;letter-spacing:.5px;margin-top:1px;}
+
+/* ── Rental Card ─────────────────────────────────────────── */
+.r-card{background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;
+  border:1px solid #E7E5E4;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.r-card-name{font-weight:800;font-size:16px;}
+.r-card-meta{font-size:12px;color:#78716C;margin-top:1px;}
+.r-card-items{font-size:13px;color:#78716C;margin:6px 0 10px;line-height:1.4;}
+.r-card-footer{display:flex;justify-content:space-between;align-items:center;}
+.r-card-total{font-weight:900;font-size:18px;color:#C2410C;}
+.r-card-btns{display:flex;gap:6px;}
+.r-card-overdue{border-left:3px solid #DC2626;}
+
+/* ── Badge ───────────────────────────────────────────────── */
+.badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;display:inline-block;}
+.badge-blue{background:#DBEAFE;color:#1D4ED8;}
+.badge-green{background:#DCFCE7;color:#16A34A;}
+.badge-red{background:#FEE2E2;color:#DC2626;}
+.badge-purple{background:#EDE9FE;color:#7C3AED;}
+.badge-yellow{background:#FEF3C7;color:#D97706;}
+
+/* ── Product Select ──────────────────────────────────────── */
+.prod-item{border:2px solid #E7E5E4;border-radius:12px;padding:10px 12px;margin-bottom:8px;transition:all .15s;}
+.prod-item.selected{border-color:#EA580C;background:#FFF7ED;}
+.prod-item.low-stock{border-color:#FCA5A5;}
+.prod-checkbox{width:22px;height:22px;border-radius:6px;border:2px solid #E7E5E4;
+  background:white;display:flex;align-items:center;justify-content:center;
+  color:white;font-size:12px;flex-shrink:0;transition:all .15s;}
+.prod-checkbox.checked{background:#EA580C;border-color:#EA580C;}
+.prod-row{display:flex;justify-content:space-between;align-items:center;}
+.prod-info{display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;}
+.prod-name{font-weight:700;font-size:15px;}
+.prod-price{font-size:12px;color:#78716C;}
+.prod-stock{font-size:11px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.prod-stock-ok{background:#DCFCE7;color:#16A34A;}
+.prod-stock-low{background:#FEE2E2;color:#DC2626;}
+
+/* ── Tamil Label Badge ───────────────────────────────────── */
+.prod-tamil{width:54px;height:54px;border-radius:10px;background:linear-gradient(135deg,#FFF3E0,#FFF7ED);
+  border:1.5px solid #FED7AA;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;text-align:center;padding:3px;}
+.prod-tamil-text{font-size:11px;font-weight:800;color:#C2410C;line-height:1.2;word-break:break-word;text-align:center;}
+.prod-tamil-sm{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#FFF3E0,#FFF7ED);
+  border:1.5px solid #FED7AA;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;text-align:center;padding:2px;}
+.prod-tamil-text-sm{font-size:9px;font-weight:800;color:#C2410C;line-height:1.2;word-break:break-word;text-align:center;}
+.qty-ctrl{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.qty-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid #E7E5E4;
+  background:white;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;}
+.qty-num{font-weight:900;font-size:16px;min-width:22px;text-align:center;}
+.qty-total{font-weight:800;color:#C2410C;font-size:14px;min-width:50px;text-align:right;}
+
+/* ── Total Box ───────────────────────────────────────────── */
+.total-box{background:#FFF3E0;border:2px solid #EA580C;border-radius:12px;
+  padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.total-label{font-weight:800;font-size:15px;}
+.total-sub{font-size:12px;color:#78716C;margin-top:2px;}
+.total-amount{font-weight:900;font-size:26px;color:#C2410C;}
+
+/* ── Bill ────────────────────────────────────────────────── */
+.bill-wrap{background:#fff;border-radius:12px;border:1px solid #E7E5E4;
+  padding:20px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.bill-header{text-align:center;border-bottom:2px dashed #E7E5E4;padding-bottom:16px;margin-bottom:16px;}
+.bill-biz{font-size:20px;font-weight:900;color:#C2410C;}
+.bill-addr{font-size:12px;color:#78716C;margin-top:3px;}
+.bill-tag{font-size:12px;font-weight:700;color:#EA580C;margin-top:5px;letter-spacing:1px;}
+.bill-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.bill-meta-key{font-size:10px;font-weight:800;color:#78716C;letter-spacing:.5px;}
+.bill-meta-val{font-weight:700;font-size:15px;margin-top:2px;}
+.bill-items{border-top:1px solid #E7E5E4;padding-top:12px;margin-bottom:12px;}
+.bill-items-label{font-size:11px;font-weight:800;color:#78716C;margin-bottom:8px;letter-spacing:.5px;}
+.bill-item{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px dashed #E7E5E4;}
+.bill-item-name{font-weight:700;}
+.bill-item-sub{font-size:12px;color:#78716C;}
+.bill-item-amt{font-weight:800;color:#C2410C;font-size:15px;}
+.bill-total{background:#FFF3E0;border-radius:10px;padding:12px 16px;
+  display:flex;justify-content:space-between;align-items:center;}
+.bill-total-label{font-weight:800;font-size:15px;}
+.bill-total-amt{font-weight:900;font-size:26px;color:#C2410C;}
+.bill-note{background:#FEF3C7;border-radius:8px;padding:8px 10px;font-size:13px;
+  color:#92400E;margin-bottom:12px;}
+.bill-returned{text-align:center;margin-top:12px;font-size:13px;color:#16A34A;font-weight:700;}
+
+/* ── Filter Tabs ─────────────────────────────────────────── */
+.filter-tabs{display:flex;gap:8px;margin-bottom:10px;}
+.filter-tab{flex:1;padding:9px 4px;border-radius:9px;font-weight:700;font-size:12px;
+  border:1.5px solid #E7E5E4;background:#fff;color:#78716C;letter-spacing:.2px;}
+.filter-tab.active{background:#C2410C;color:#fff;border-color:#C2410C;}
+
+/* ── Toast ───────────────────────────────────────────────── */
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);
+  background:#16A34A;color:#fff;padding:10px 20px;border-radius:20px;
+  font-weight:700;font-size:14px;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,.2);
+  white-space:nowrap;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;top:8px;}to{opacity:1;top:16px;}}
+
+/* ── Warning Box ─────────────────────────────────────────── */
+.warn-box{background:#FEF3C7;border-radius:10px;padding:10px 14px;
+  font-size:13px;color:#D97706;text-align:center;}
+.overdue-box{background:#FEE2E2;border-radius:10px;padding:10px 14px;
+  font-size:13px;color:#DC2626;text-align:center;font-weight:700;}
+
+/* ── Empty State ─────────────────────────────────────────── */
+.empty{text-align:center;padding:40px 20px;color:#78716C;}
+.empty-icon{font-size:36px;margin-bottom:8px;}
+.empty-title{font-weight:700;font-size:15px;}
+.empty-sub{font-size:13px;margin-top:4px;}
+
+/* ── Settings ────────────────────────────────────────────── */
+.prod-row-edit{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+.price-wrap{position:relative;flex:1;}
+.price-prefix{position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  color:#78716C;font-size:14px;pointer-events:none;}
+.price-inp{padding-left:22px!important;}
+.add-prod-box{background:#FFF7ED;border-radius:10px;padding:12px;margin-bottom:12px;border:1.5px solid #EA580C;}
+
+/* ── Event Type Selector ────────────────────────────────── */
+.event-types{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.event-chip{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;
+  border:2px solid #E7E5E4;background:#fff;color:#78716C;cursor:pointer;transition:all .15s;}
+.event-chip.selected{border-color:#EA580C;background:#FFF7ED;color:#EA580C;}
+
+/* ── Customer History Banner ────────────────────────────── */
+.cust-history{background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px;
+  padding:10px 14px;margin-bottom:10px;font-size:13px;color:#1D4ED8;}
+.cust-history-title{font-weight:800;margin-bottom:4px;font-size:14px;}
+.cust-history-stat{display:flex;gap:14px;margin-top:4px;}
+.cust-history-item{display:flex;flex-direction:column;}
+.cust-history-val{font-weight:900;font-size:16px;color:#1D4ED8;}
+.cust-history-label{font-size:10px;color:#78716C;font-weight:700;}
+
+/* ── Monthly Revenue ─────────────────────────────────────── */
+.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.month-nav-btn{background:none;border:1.5px solid #E7E5E4;border-radius:8px;
+  padding:6px 14px;font-size:18px;color:#C2410C;}
+.month-nav-label{font-weight:800;font-size:16px;color:#1C1917;}
+.chart-wrap{background:#fff;border-radius:12px;border:1px solid #E7E5E4;padding:16px;margin-bottom:10px;}
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:100px;margin-bottom:8px;}
+.chart-bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:3px;}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;background:#FED7AA;min-height:3px;transition:height .3s;}
+.chart-bar.today{background:#C2410C;}
+.chart-bar.has-data{background:#EA580C;}
+.chart-day-label{font-size:9px;color:#78716C;font-weight:700;}
+.month-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.month-stat{background:#fff;border-radius:10px;padding:12px 14px;border:1px solid #E7E5E4;}
+.month-stat-val{font-size:20px;font-weight:900;color:#C2410C;}
+.month-stat-label{font-size:11px;font-weight:700;color:#78716C;margin-top:2px;}
+.top-items-list{background:#fff;border-radius:12px;border:1px solid #E7E5E4;padding:14px;margin-bottom:10px;}
+.top-item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed #E7E5E4;}
+.top-item-row:last-child{border-bottom:none;}
+.top-item-name{font-weight:700;font-size:14px;}
+.top-item-count{font-size:12px;color:#78716C;}
+.top-item-bar{height:6px;border-radius:3px;background:#FED7AA;margin-top:4px;}
+.top-item-bar-fill{height:100%;border-radius:3px;background:#EA580C;}
+
+/* ── Calendar ────────────────────────────────────────────── */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px;}
+.cal-day-header{text-align:center;font-size:10px;font-weight:800;color:#78716C;padding:4px 0;letter-spacing:.3px;}
+.cal-day{border-radius:8px;padding:6px 4px;text-align:center;min-height:44px;
+  cursor:pointer;transition:all .15s;position:relative;border:1.5px solid transparent;}
+.cal-day:empty{background:transparent;}
+.cal-day-num{font-size:13px;font-weight:700;color:#1C1917;}
+.cal-day.today .cal-day-num{color:#C2410C;font-weight:900;}
+.cal-day.has-rentals{background:#FFF7ED;border-color:#FED7AA;}
+.cal-day.today{border-color:#C2410C!important;}
+.cal-day.selected{background:#C2410C!important;border-color:#C2410C!important;}
+.cal-day.selected .cal-day-num{color:#fff!important;}
+.cal-dots{display:flex;gap:2px;justify-content:center;margin-top:2px;flex-wrap:wrap;}
+.cal-dot{width:5px;height:5px;border-radius:50%;background:#EA580C;flex-shrink:0;}
+.cal-dot-green{background:#16A34A;}
+.cal-day-rentals{background:#fff;border-radius:10px;border:1px solid #E7E5E4;padding:12px;margin-bottom:10px;}
+.cal-day-rentals-title{font-size:12px;font-weight:800;color:#78716C;margin-bottom:8px;letter-spacing:.5px;}
+
+/* ── Stock Tracker ────────────────────────────────────────── */
+.stock-bar{height:8px;border-radius:4px;background:#E7E5E4;margin-top:6px;overflow:hidden;}
+.stock-bar-fill{height:100%;border-radius:4px;transition:width .4s;}
+.stock-bar-fill.high{background:#16A34A;}
+.stock-bar-fill.mid{background:#F59E0B;}
+.stock-bar-fill.low{background:#DC2626;}
+.stock-item{background:#fff;border-radius:10px;padding:12px 14px;border:1px solid #E7E5E4;margin-bottom:8px;}
+.stock-item-header{display:flex;justify-content:space-between;align-items:center;}
+.stock-item-name{font-weight:700;font-size:14px;}
+.stock-count-ctrl{display:flex;align-items:center;gap:8px;}
+.stock-count-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid #E7E5E4;
+  background:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.stock-count-num{font-weight:900;font-size:16px;min-width:28px;text-align:center;color:#C2410C;}
+
+/* ── Print ───────────────────────────────────────────────── */
+@media print{
+  .no-print{display:none!important;}
+  body{background:white!important;}
+  #app,.page{max-width:100%!important;}
+  .bill-wrap{box-shadow:none!important;border:1.5px solid #ccc!important;page-break-inside:avoid;}
+  .topbar{position:relative!important;}
+}
+
+/* ── Dashboard Header ────────────────────────────────────── */
+.dash-header{background:#C2410C;padding:16px 14px 14px;color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);}
+.dash-biz{font-size:18px;font-weight:900;letter-spacing:-.3px;}
+.dash-date{font-size:12px;opacity:.75;margin-top:3px;}
+.dash-gear{background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:8px;
+  padding:7px 11px;font-size:16px;}
+.dash-header-row{display:flex;justify-content:space-between;align-items:flex-start;}
+.dash-actions{display:flex;gap:8px;margin-bottom:14px;}
+.dash-quick-btns{display:flex;gap:8px;margin-bottom:10px;}
+.dash-quick-btn{flex:1;background:#fff;border:1.5px solid #E7E5E4;border-radius:10px;
+  padding:10px 6px;font-size:12px;font-weight:700;color:#78716C;cursor:pointer;text-align:center;}
+.dash-quick-btn:active{transform:scale(.97);}
+.dash-quick-btn span{display:block;font-size:18px;margin-bottom:2px;}
+
+/* ── Overdue Alert Banner ────────────────────────────────── */
+.overdue-banner{background:#FEE2E2;border-radius:10px;padding:10px 14px;margin-bottom:10px;
+  border:1.5px solid #FCA5A5;display:flex;align-items:center;justify-content:space-between;}
+.overdue-banner-text{font-size:13px;font-weight:700;color:#DC2626;}
+.overdue-banner-count{background:#DC2626;color:#fff;border-radius:20px;padding:2px 10px;
+  font-size:12px;font-weight:800;}
+
+/* ── Spacer ──────────────────────────────────────────────── */
+.spacer{height:28px;}
+
+/* ── Padding wrapper ─────────────────────────────────────── */
+.pad{padding:12px;}
+.pad-x{padding:0 12px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  DATA & DEFAULTS
+// ════════════════════════════════════════════════════════════
+const DEFAULT_PRODUCTS = [
+  {id:"p1",  name:"Erattai Aduppu",      price:200, stock:10, image:""},
+  {id:"p2",  name:"Otha Aduppu",         price:100, stock:10, image:""},
+  {id:"p3",  name:"Periya Kunda",        price:200, stock:10, image:""},
+  {id:"p4",  name:"Sinna Kunda",         price:150, stock:10, image:""},
+  {id:"p5",  name:"4m Musur Kunda",      price:100, stock:10, image:""},
+  {id:"p6",  name:"Oru Vali",            price:20,  stock:10, image:""},
+  {id:"p7",  name:"Kadhu Vacha Passion", price:20,  stock:10, image:""},
+  {id:"p8",  name:"Jug",                 price:10,  stock:10, image:""},
+  {id:"p9",  name:"Mug",                 price:10,  stock:10, image:""},
+  {id:"p10", name:"Thuduppu",            price:50,  stock:10, image:""},
+  {id:"p11", name:"Anna Karendi",        price:10,  stock:10, image:""},
+  {id:"p12", name:"Vada Chetti",         price:50,  stock:10, image:""},
+  {id:"p13", name:"Ari Karendi",         price:10,  stock:10, image:""},
+  {id:"p14", name:"Vadi Gatti",          price:100, stock:10, image:""},
+  {id:"p15", name:"Val Poni",            price:70,  stock:10, image:""},
+  {id:"p16", name:"Plain Bottom Kunda",  price:50,  stock:10, image:""},
+  {id:"p17", name:"Passion",             price:30,  stock:10, image:""},
+];
+
+// Tamil label for each product (shown as badge instead of image)
+const TAMIL_LABELS = {
+  "p1":  "எரட்டை\nஅடுப்பு",
+  "p2":  "ஒத்த\nஅடுப்பு",
+  "p3":  "பெரிய\nகுண்டா",
+  "p4":  "சின்ன\nகுண்டா",
+  "p5":  "4மீ முசூர்\nகுண்டா",
+  "p6":  "ஒரு வாலி",
+  "p7":  "காது வச்ச\nபேஷன்",
+  "p8":  "ஜக்",
+  "p9":  "மக்",
+  "p10": "துடுப்பு",
+  "p11": "அன்ன\nகரண்டி",
+  "p12": "வட\nசட்டி",
+  "p13": "அரி\nகரண்டி",
+  "p14": "வடி கட்டி",
+  "p15": "வால்\nபோனி",
+  "p16": "பிளேன்\nகுண்டா",
+  "p17": "பேஷன்",
+};
+
+function getTamilLabel(productId) {
+  return TAMIL_LABELS[productId] || "";
+}
+
+const DEFAULT_SETTINGS = {
+  businessName: "Sri Murugan Vessel Rentals",
+  ownerName:    "Owner",
+  myPhone:      "",
+  address:      "",
+  overdueDays:  3
+};
+
+const EVENT_TYPES = [
+  {id:"wedding",  label:"💒 Wedding"},
+  {id:"festival", label:"🪔 Festival"},
+  {id:"function", label:"🎊 Function"},
+  {id:"puja",     label:"🙏 Puja"},
+  {id:"birthday", label:"🎂 Birthday"},
+  {id:"other",    label:"📦 Other"},
+];
+
+// ════════════════════════════════════════════════════════════
+//  STORAGE  (localStorage)
+// ════════════════════════════════════════════════════════════
+const DB = {
+  load(key, fallback) {
+    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }
+    catch { return fallback; }
+  },
+  save(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+  }
+};
+
+// ════════════════════════════════════════════════════════════
+//  MIGRATION: replace old default products with new Tamil list
+// ════════════════════════════════════════════════════════════
+(function migrateProducts() {
+  const stored = DB.load("rm_products", null);
+  if (!stored) return;
+  const hasOld = stored.some(p => ["Big Vessel","Medium Vessel","Small Vessel","Ladle Set","Tray / Plate"].includes(p.name));
+  if (hasOld) DB.save("rm_products", DEFAULT_PRODUCTS);
+})();
+
+// ════════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════════
+const state = {
+  page:     "dashboard",
+  prevPage: "dashboard",
+  rentals:  DB.load("rm_rentals", []),
+  products: DB.load("rm_products", DEFAULT_PRODUCTS),
+  settings: { ...DEFAULT_SETTINGS, ...DB.load("rm_settings", {}) },
+  selId:    null,
+  toastTimer: null,
+  calMonth: new Date().getMonth(),
+  calYear:  new Date().getFullYear(),
+  calSelDay: null,
+};
+
+// ════════════════════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════════════════════
+const fmt   = d => new Date(d || Date.now()).toLocaleDateString("en-IN", {day:"2-digit",month:"short",year:"numeric"});
+const inr   = n => "₹" + Number(n).toLocaleString("en-IN");
+const genId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+const fmtPh = p => p.replace(/\D/g,"").slice(-10);
+const todayISO = () => new Date().toISOString().slice(0,10);
+const todayStr = () => new Date().toDateString();
+
+function getDaysSince(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  return Math.floor((now - d) / (1000*60*60*24));
+}
+
+function getOverdueRentals() {
+  const days = state.settings.overdueDays || 3;
+  return state.rentals.filter(r =>
+    r.status === "Given" && getDaysSince(r.createdAt) >= days
+  );
+}
+
+// ── Stock helpers ─────────────────────────────────────────
+function getEffectiveStock(productId) {
+  const p = state.products.find(x => x.id === productId);
+  if (!p) return 0;
+  const inUse = state.rentals
+    .filter(r => r.status === "Given")
+    .reduce((sum, r) => {
+      const item = r.items.find(i => i.id === productId);
+      return sum + (item ? item.qty : 0);
+    }, 0);
+  return (p.stock || 0) - inUse;
+}
+
+// ── Customer history ──────────────────────────────────────
+function getCustomerHistory(phone) {
+  const clean = fmtPh(phone);
+  if (clean.length < 6) return null;
+  const prev = state.rentals.filter(r => r.phone === clean);
+  if (prev.length === 0) return null;
+  return {
+    count: prev.length,
+    total: prev.reduce((s,r) => s+r.total, 0),
+    last:  prev.sort((a,b) => new Date(b.createdAt)-new Date(a.createdAt))[0]
+  };
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER ENGINE
+// ════════════════════════════════════════════════════════════
+function render() {
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  const page = buildPage(state.page);
+  app.appendChild(page);
+  window.scrollTo(0,0);
+}
+
+function el(tag, attrs={}, ...children) {
+  const node = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class")         node.className = v;
+    else if (k.startsWith("on")) node.addEventListener(k.slice(2).toLowerCase(), v);
+    else if (k === "html")     node.innerHTML = v;
+    else if (k === "style" && typeof v === "object") Object.assign(node.style, v);
+    else                       node.setAttribute(k, v);
+  }
+  for (const c of children.flat(10)) {
+    if (c == null || c === false) continue;
+    node.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+  }
+  return node;
+}
+
+function toast(msg, color="#16A34A") {
+  const old = document.querySelector(".toast");
+  if (old) old.remove();
+  if (state.toastTimer) clearTimeout(state.toastTimer);
+  const t = el("div", {class:"toast", style:{background:color}}, msg);
+  document.body.appendChild(t);
+  state.toastTimer = setTimeout(() => t.remove(), 2500);
+}
+
+function goTo(page) {
+  state.prevPage = state.page;
+  state.page = page;
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+//  ACTIONS
+// ════════════════════════════════════════════════════════════
+function saveRentals(data) {
+  state.rentals = data;
+  DB.save("rm_rentals", data);
+}
+
+function addRental(rental) {
+  saveRentals([rental, ...state.rentals]);
+  state.selId = rental.id;
+  toast("✓ Rental saved!");
+  goTo("bill");
+}
+
+function markReturned(id) {
+  saveRentals(state.rentals.map(r =>
+    r.id === id ? {...r, status:"Returned", returnedAt: new Date().toISOString()} : r
+  ));
+  toast("✅ Marked as returned!");
+  render();
+}
+
+function deleteRental(id) {
+  if (!confirm("Delete this rental permanently?")) return;
+  saveRentals(state.rentals.filter(r => r.id !== id));
+  toast("Deleted.", "#78716C");
+  render();
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE: DASHBOARD
+// ════════════════════════════════════════════════════════════
+function buildDashboard() {
+  const s = state.settings;
+  const active    = state.rentals.filter(r => r.status === "Given");
+  const todayR    = state.rentals.filter(r => new Date(r.createdAt).toDateString() === todayStr());
+  const todayRev  = todayR.reduce((s,r) => s+r.total, 0);
+  const show      = active.slice(0, 6);
+  const overdue   = getOverdueRentals();
+
+  const header = el("div", {class:"dash-header no-print"},
+    el("div", {class:"dash-header-row"},
+      el("div", {},
+        el("div", {class:"dash-biz"}, "🏺 " + s.businessName),
+        el("div", {class:"dash-date"}, fmt(new Date()))
+      ),
+      el("button", {class:"dash-gear", onClick:()=>goTo("settings")}, "⚙️")
+    )
+  );
+
+  const stats = el("div", {class:"stats-row"},
+    buildStat("📦", active.length,   "ACTIVE",   "#C2410C"),
+    buildStat("📋", todayR.length,   "TODAY",    "#1D4ED8"),
+    buildStat("💰", inr(todayRev),   "REVENUE",  "#16A34A")
+  );
+
+  // Quick nav buttons
+  const quickBtns = el("div", {class:"dash-quick-btns"},
+    buildQuickBtn("📊", "Revenue", ()=>goTo("monthly")),
+    buildQuickBtn("📅", "Calendar", ()=>goTo("calendar")),
+    buildQuickBtn("📦", "Stock", ()=>goTo("stock")),
+  );
+
+  const actions = el("div", {class:"dash-actions"},
+    el("button", {
+      class:"btn btn-accent btn-full",
+      style:{flex:"2",fontSize:"16px",borderRadius:"12px"},
+      onClick: ()=>goTo("new")
+    }, "➕ New Rental"),
+    el("button", {
+      class:"btn btn-ghost",
+      style:{flex:"1",borderRadius:"12px"},
+      onClick: ()=>goTo("list")
+    }, "📋 All")
+  );
+
+  // Overdue banner
+  const overdueBanner = overdue.length > 0
+    ? el("div", {class:"overdue-banner", onClick:()=>goTo("list")},
+        el("div", {class:"overdue-banner-text"}, "⚠️ Overdue Rentals – tap to review"),
+        el("div", {class:"overdue-banner-count"}, overdue.length)
+      )
+    : null;
+
+  const sectionLabel = el("div", {
+    style:{fontSize:"12px",fontWeight:"800",color:"#78716C",marginBottom:"8px",
+           paddingLeft:"2px",letterSpacing:".5px"}
+  }, "ACTIVE RENTALS" + (active.length > 6 ? ` (${active.length} total)` : ""));
+
+  let cardsEl;
+  if (show.length === 0) {
+    cardsEl = el("div", {class:"card", style:{textAlign:"center",padding:"32px 20px"}},
+      el("div", {class:"empty-icon"}, "🎊"),
+      el("div", {style:{fontWeight:"800",fontSize:"15px",marginTop:"8px"}}, "No active rentals"),
+      el("div", {style:{fontSize:"13px",color:"#78716C",marginTop:"4px"}}, `Tap "New Rental" to begin`)
+    );
+  } else {
+    cardsEl = el("div", {}, ...show.map(r => buildRentalCard(r, true)));
+  }
+
+  const viewAllBtn = active.length > 6
+    ? el("button", {
+        class:"btn btn-ghost btn-full",
+        style:{marginTop:"4px",borderColor:"#FED7AA",color:"#C2410C"},
+        onClick:()=>goTo("list")
+      }, `View all ${active.length} active rentals →`)
+    : null;
+
+  return el("div", {class:"page"},
+    header,
+    el("div", {class:"pad"},
+      stats,
+      quickBtns,
+      actions,
+      overdueBanner,
+      sectionLabel,
+      cardsEl,
+      viewAllBtn,
+      el("div", {class:"spacer"})
+    )
+  );
+}
+
+function buildStat(icon, val, label, color) {
+  return el("div", {class:"stat-card"},
+    el("div", {class:"stat-icon"}, icon),
+    el("div", {class:"stat-val", style:{color}}, String(val)),
+    el("div", {class:"stat-label"}, label)
+  );
+}
+
+function buildQuickBtn(icon, label, onClick) {
+  const btn = el("div", {class:"dash-quick-btn", onClick},
+    el("span", {}, icon),
+    label
+  );
+  return btn;
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENTAL CARD  (shared component)
+// ════════════════════════════════════════════════════════════
+function buildRentalCard(rental, showReturn=false, showDelete=false) {
+  const active = rental.status === "Given";
+  const days   = getDaysSince(rental.createdAt);
+  const overdueDays = state.settings.overdueDays || 3;
+  const isOverdue  = active && days >= overdueDays;
+  const itemsText  = rental.items.map(i => `${i.name} ×${i.qty}`).join(" · ");
+  const eventLabel = rental.eventType
+    ? EVENT_TYPES.find(e=>e.id===rental.eventType)?.label : null;
+
+  const btns = el("div", {class:"r-card-btns"});
+
+  if (active && showReturn) {
+    // WhatsApp reminder for overdue
+    if (isOverdue) {
+      const waMsg = buildReminderMessage(rental, state.settings);
+      const waURL = `https://wa.me/91${rental.phone}?text=${encodeURIComponent(waMsg)}`;
+      btns.appendChild(el("a", {
+        class:"btn btn-sm",
+        href: waURL, target:"_blank",
+        style:{background:"#DCF8C6",color:"#128C7E",border:"1px solid #86EFAC",textDecoration:"none",display:"inline-flex",alignItems:"center",gap:"4px"}
+      }, "📲 Remind"));
+    }
+    btns.appendChild(el("button", {
+      class:"btn btn-sm",
+      style:{background:"#DCFCE7",color:"#16A34A",border:"1px solid #86EFAC"},
+      onClick:()=>markReturned(rental.id)
+    }, "✓ Return"));
+  }
+  btns.appendChild(el("button", {
+    class:"btn btn-sm",
+    style:{background:"#FED7AA",color:"#C2410C"},
+    onClick:()=>{ state.selId=rental.id; goTo("bill"); }
+  }, "Bill"));
+  if (showDelete) {
+    btns.appendChild(el("button", {
+      class:"btn btn-sm",
+      style:{background:"#FEE2E2",color:"#DC2626"},
+      onClick:()=>deleteRental(rental.id)
+    }, "✕"));
+  }
+
+  const daysLabel = active
+    ? el("span", {
+        style:{fontSize:"11px",fontWeight:"700",color: isOverdue?"#DC2626":"#78716C",marginLeft:"4px"}
+      }, isOverdue ? `⚠️ ${days}d overdue` : `${days}d ago`)
+    : null;
+
+  return el("div", {class:`r-card${isOverdue?" r-card-overdue":""}`},
+    el("div", {style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"6px"}},
+      el("div", {},
+        el("div", {class:"r-card-name"}, rental.customerName),
+        el("div", {class:"r-card-meta"},
+          `📱 ${rental.phone}  ·  📅 ${fmt(rental.createdAt)}`,
+          daysLabel
+        )
+      ),
+      el("div", {style:{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:"4px"}},
+        el("span", {class:`badge ${active?"badge-blue":"badge-green"}`}, rental.status),
+        eventLabel ? el("span", {class:"badge badge-purple", style:{fontSize:"11px"}}, eventLabel) : null
+      )
+    ),
+    el("div", {class:"r-card-items"}, itemsText),
+    el("div", {class:"r-card-footer"},
+      el("div", {class:"r-card-total"}, inr(rental.total)),
+      btns
+    )
+  );
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE: NEW RENTAL
+// ════════════════════════════════════════════════════════════
+function buildNewRental() {
+  let name="", phone="", date=todayISO(), note="", eventType="";
+  const sel = {};
+  let custHistoryEl = null;
+
+  const wrap = el("div", {class:"page"});
+  wrap.appendChild(buildTopBar("New Rental", ()=>goTo("dashboard")));
+
+  const form = el("div", {class:"pad"});
+  wrap.appendChild(form);
+
+  // ── Customer card ─────────────────────────────────────────
+  const nameInp  = buildInp("text", "Customer Name", v => name = v);
+  const phoneInp = buildInp("tel",  "Mobile Number",  v => {
+    phone = v;
+    updateHistory(v);
+  }, "numeric");
+  const dateInp  = buildDateInp(date, v => date = v);
+  const noteInp  = buildInp("text", "Note (optional)", v => note = v);
+  noteInp.placeholder = "e.g. For wedding, return after 3 days";
+
+  const nameErr  = el("div", {class:"err-msg", style:{display:"none"}});
+  const phoneErr = el("div", {class:"err-msg", style:{display:"none"}});
+  const itemsErr = el("div", {class:"err-msg", style:{background:"#FEE2E2",padding:"7px 10px",borderRadius:"8px",marginBottom:"10px",display:"none"}});
+
+  const historyHolder = el("div", {});
+
+  function updateHistory(ph) {
+    historyHolder.innerHTML = "";
+    const h = getCustomerHistory(ph);
+    if (!h) return;
+    const lastItems = h.last.items.map(i=>`${i.name}×${i.qty}`).join(", ");
+    historyHolder.appendChild(el("div", {class:"cust-history"},
+      el("div", {class:"cust-history-title"}, "🔄 Repeat Customer Detected!"),
+      el("div", {class:"cust-history-stat"},
+        buildHistoryStat(h.count, "Rentals"),
+        buildHistoryStat(inr(h.total), "Total Spent"),
+        buildHistoryStat(fmt(h.last.createdAt), "Last Rental")
+      ),
+      el("div", {style:{fontSize:"12px",color:"#1D4ED8",marginTop:"6px"}},
+        `Last order: ${lastItems}`)
+    ));
+  }
+
+  function buildHistoryStat(val, label) {
+    return el("div", {class:"cust-history-item"},
+      el("div", {class:"cust-history-val"}, String(val)),
+      el("div", {class:"cust-history-label"}, label)
+    );
+  }
+
+  // ── Event Type Selector ───────────────────────────────────
+  const eventChips = el("div", {class:"event-types"});
+  EVENT_TYPES.forEach(ev => {
+    const chip = el("div", {class:"event-chip", onClick:()=>{
+      eventType = eventType === ev.id ? "" : ev.id;
+      eventChips.querySelectorAll(".event-chip").forEach(c=>c.classList.remove("selected"));
+      if (eventType) chip.classList.add("selected");
+    }}, ev.label);
+    eventChips.appendChild(chip);
+  });
+
+  const custCard = el("div", {class:"card", style:{marginBottom:"10px"}},
+    el("div", {class:"card-title"}, "👤 Customer Details"),
+    el("div", {class:"field"}, el("label", {class:"lbl"}, "Customer Name *"), nameInp, nameErr),
+    el("div", {class:"field"}, el("label", {class:"lbl"}, "Mobile Number *"), phoneInp, phoneErr),
+    historyHolder,
+    el("div", {class:"field"}, el("label", {class:"lbl"}, "Rental Date"), dateInp),
+    el("div", {class:"field"}, el("label", {class:"lbl"}, "Event Type"), eventChips),
+    el("div", {class:"field"}, el("label", {class:"lbl"}, "Note (optional)"), noteInp)
+  );
+  form.appendChild(custCard);
+
+  // ── Products card ─────────────────────────────────────────
+  const prodsEl = el("div", {class:"card", style:{marginBottom:"10px"}},
+    el("div", {class:"card-title"}, "🏺 Select Items"),
+    itemsErr
+  );
+  form.appendChild(prodsEl);
+
+  state.products.forEach(p => {
+    const avail = getEffectiveStock(p.id);
+    const row = buildProductRow(p, sel, () => updateTotalBox(), avail);
+    prodsEl.appendChild(row);
+  });
+
+  // ── Total box ─────────────────────────────────────────────
+  const totalAmt = el("div", {class:"total-amount"}, "₹0");
+  const totalSub = el("div", {class:"total-sub"}, "");
+  const totalBox = el("div", {class:"total-box", style:{display:"none"}},
+    el("div", {}, el("div", {class:"total-label"}, "Total Amount"), totalSub),
+    totalAmt
+  );
+  form.appendChild(totalBox);
+
+  function updateTotalBox() {
+    const items = state.products.filter(p => sel[p.id] !== undefined);
+    const total = items.reduce((s,p) => s + p.price*(sel[p.id]||1), 0);
+    const qty   = items.reduce((s,p) => s + (sel[p.id]||1), 0);
+    if (items.length > 0) {
+      totalAmt.textContent = inr(total);
+      totalSub.textContent = `${items.length} item type${items.length>1?"s":""}, ${qty} pieces`;
+      totalBox.style.display = "flex";
+    } else {
+      totalBox.style.display = "none";
+    }
+  }
+
+  // ── Submit ────────────────────────────────────────────────
+  const submitBtn = el("button", {
+    class:"btn btn-primary btn-full",
+    style:{marginBottom:"24px",fontSize:"16px",borderRadius:"12px",padding:"14px 20px"},
+    onClick: handleSubmit
+  }, "🧾 Generate Bill");
+  form.appendChild(submitBtn);
+
+  function handleSubmit() {
+    let valid = true;
+    if (!name.trim()) {
+      nameErr.textContent = "Customer name is required"; nameErr.style.display="block"; valid=false;
+      nameInp.classList.add("inp-err");
+    } else { nameErr.style.display="none"; nameInp.classList.remove("inp-err"); }
+
+    if (fmtPh(phone).length < 10) {
+      phoneErr.textContent = "Enter valid 10-digit number"; phoneErr.style.display="block"; valid=false;
+      phoneInp.classList.add("inp-err");
+    } else { phoneErr.style.display="none"; phoneInp.classList.remove("inp-err"); }
+
+    const selectedProducts = state.products.filter(p => sel[p.id] !== undefined);
+    if (selectedProducts.length === 0) {
+      itemsErr.textContent = "Select at least one item"; itemsErr.style.display="block"; valid=false;
+    } else { itemsErr.style.display="none"; }
+
+    if (!valid) return;
+
+    const items = selectedProducts.map(p => ({
+      id:p.id, name:p.name, price:p.price, qty:sel[p.id], subtotal:p.price*sel[p.id]
+    }));
+    const total = items.reduce((s,i) => s+i.subtotal, 0);
+
+    addRental({
+      id: genId(),
+      customerName: name.trim(),
+      phone: fmtPh(phone),
+      createdAt: new Date(date).toISOString(),
+      items, total,
+      status: "Given",
+      returnedAt: null,
+      note: note.trim(),
+      eventType: eventType || ""
+    });
+  }
+
+  return wrap;
+}
+
+function buildInp(type, placeholder, onChange, inputMode="") {
+  const inp = el("input", {class:"inp", type, placeholder});
+  if (inputMode) inp.setAttribute("inputmode", inputMode);
+  inp.addEventListener("input", e => onChange(e.target.value));
+  return inp;
+}
+
+function buildDateInp(val, onChange) {
+  const inp = el("input", {class:"inp", type:"date", value:val});
+  inp.addEventListener("change", e => onChange(e.target.value));
+  return inp;
+}
+
+function buildProductRow(product, sel, onUpdate, availableStock) {
+  const row      = el("div", {class:`prod-item${availableStock<=0?" low-stock":""}`});
+  const checkbox = el("div", {class:"prod-checkbox"});
+  const nameEl   = el("div", {class:"prod-name"}, product.name);
+  const stockCls = availableStock <= 2 ? "prod-stock prod-stock-low" : "prod-stock prod-stock-ok";
+  const stockEl  = el("div", {class:stockCls},
+    availableStock <= 0 ? "Out of stock" : `${availableStock} avail`
+  );
+  const priceEl  = el("div", {class:"prod-price"}, inr(product.price) + " per day");
+
+  // Tamil label badge instead of image
+  const tamilText = getTamilLabel(product.id) || product.name.split(" ").slice(0,2).join("\n");
+  const tamilBadge = el("div", {class:"prod-tamil"},
+    el("div", {class:"prod-tamil-text", style:{whiteSpace:"pre-line"}}, tamilText)
+  );
+
+  const info = el("div", {class:"prod-info"}, checkbox, tamilBadge, el("div",{},
+    el("div",{style:{display:"flex",alignItems:"center",gap:"6px"}}, nameEl, stockEl), priceEl));
+  const qtyEl    = el("div", {class:"qty-ctrl", style:{display:"none"}});
+  const qtyNum   = el("span", {class:"qty-num"}, "1");
+  const qtyTotal = el("span", {class:"qty-total"}, inr(product.price));
+  const minusBtn = el("button", {class:"qty-btn"}, "−");
+  const plusBtn  = el("button", {class:"qty-btn"}, "+");
+
+  qtyEl.appendChild(minusBtn); qtyEl.appendChild(qtyNum);
+  qtyEl.appendChild(plusBtn);  qtyEl.appendChild(qtyTotal);
+  row.appendChild(el("div", {class:"prod-row"}, info, qtyEl));
+
+  function setQty(q) {
+    const max = Math.max(1, availableStock);
+    const qty = Math.max(1, Math.min(q, max));
+    sel[product.id] = qty;
+    qtyNum.textContent = qty;
+    qtyTotal.textContent = inr(product.price * qty);
+    onUpdate();
+  }
+
+  function toggle() {
+    if (availableStock <= 0) { toast("⚠️ Out of stock!", "#DC2626"); return; }
+    if (sel[product.id] !== undefined) {
+      delete sel[product.id];
+      row.classList.remove("selected");
+      checkbox.classList.remove("checked");
+      checkbox.textContent = "";
+      qtyEl.style.display = "none";
+    } else {
+      sel[product.id] = 1;
+      row.classList.add("selected");
+      checkbox.classList.add("checked");
+      checkbox.textContent = "✓";
+      qtyEl.style.display = "flex";
+    }
+    onUpdate();
+  }
+
+  info.addEventListener("click", toggle);
+  minusBtn.addEventListener("click", e => { e.stopPropagation(); if(sel[product.id]) setQty(sel[product.id]-1); });
+  plusBtn.addEventListener("click",  e => { e.stopPropagation(); if(sel[product.id]) setQty(sel[product.id]+1); });
+
+  return row;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE: BILL VIEW
+// ════════════════════════════════════════════════════════════
+function buildBillPage() {
+  const rental = state.rentals.find(r => r.id === state.selId);
+  const s      = state.settings;
+  if (!rental) return buildDashboard();
+
+  const active   = rental.status === "Given";
+  const days     = getDaysSince(rental.createdAt);
+  const overdue  = active && days >= (s.overdueDays||3);
+  const eventLabel = rental.eventType
+    ? EVENT_TYPES.find(e=>e.id===rental.eventType)?.label : null;
+  const wrap = el("div", {class:"page"});
+
+  wrap.appendChild(buildTopBar("Rental Bill", ()=>goTo(state.prevPage),
+    el("button", {class:"topbar-action no-print", onClick:()=>window.print()}, "🖨 Print")
+  ));
+
+  const content = el("div", {class:"pad"});
+  wrap.appendChild(content);
+
+  const billAddr = s.address ? el("div",{class:"bill-addr"}, s.address) : null;
+  const noteEl   = rental.note ? el("div",{class:"bill-note"}, "📝 " + rental.note) : null;
+  const retEl    = rental.returnedAt ? el("div",{class:"bill-returned"}, "✅ Returned on " + fmt(rental.returnedAt)) : null;
+  const eventEl  = eventLabel ? el("div",{style:{textAlign:"center",marginBottom:"8px"}},
+    el("span",{class:"badge badge-purple"}, eventLabel)) : null;
+
+  const billEl = el("div", {class:"bill-wrap"},
+    el("div", {class:"bill-header"},
+      el("div", {class:"bill-biz"}, s.businessName),
+      billAddr,
+      el("div", {class:"bill-tag"}, "— RENTAL BILL —"),
+      eventEl
+    ),
+    el("div", {class:"bill-meta"},
+      buildMeta("CUSTOMER", rental.customerName, 15),
+      buildMeta("PHONE",    rental.phone,         14),
+      buildMeta("DATE",     fmt(rental.createdAt), 14),
+      buildMetaBadge("STATUS", rental.status, active)
+    ),
+    noteEl,
+    el("div", {class:"bill-items"},
+      el("div", {class:"bill-items-label"}, "ITEMS"),
+      ...rental.items.map(item => {
+        const prod = state.products.find(p=>p.id===item.id);
+        const tamilText = prod ? (getTamilLabel(prod.id) || prod.name.split(" ").slice(0,2).join("\n")) : item.name.split(" ")[0];
+        const thumbEl = el("div", {class:"prod-tamil-sm"},
+          el("div", {class:"prod-tamil-text-sm", style:{whiteSpace:"pre-line"}}, tamilText)
+        );
+        return el("div", {class:"bill-item"},
+          el("div", {style:{display:"flex",alignItems:"center",gap:"10px",flex:1}},
+            thumbEl,
+            el("div", {},
+              el("div", {class:"bill-item-name"}, item.name),
+              el("div", {class:"bill-item-sub"}, `${inr(item.price)} × ${item.qty}`)
+            )
+          ),
+          el("div", {class:"bill-item-amt"}, inr(item.subtotal))
+        );
+      })
+    ),
+    el("div", {class:"bill-total"},
+      el("div", {class:"bill-total-label"}, "TOTAL AMOUNT"),
+      el("div", {class:"bill-total-amt"}, inr(rental.total))
+    ),
+    retEl
+  );
+  content.appendChild(billEl);
+
+  if (overdue) {
+    content.appendChild(el("div", {class:"overdue-box"},
+      `⚠️ ${days} days overdue! Please collect or remind customer.`
+    ));
+  }
+
+  const actions = el("div", {class:"no-print", style:{display:"flex",flexDirection:"column",gap:"10px",marginBottom:"24px"}});
+
+  const msg   = buildWAMessage(rental, s);
+  const waURL = `https://wa.me/91${rental.phone}?text=${encodeURIComponent(msg)}`;
+  actions.appendChild(el("a", {class:"btn-wa", href:waURL, target:"_blank"},
+    "📱 Send Bill to Customer"
+  ));
+
+  if (overdue) {
+    const remMsg = buildReminderMessage(rental, s);
+    const remURL = `https://wa.me/91${rental.phone}?text=${encodeURIComponent(remMsg)}`;
+    actions.appendChild(el("a", {
+      class:"btn", href:remURL, target:"_blank",
+      style:{background:"#FEE2E2",color:"#DC2626",border:"1.5px solid #FCA5A5",borderRadius:"10px",
+             padding:"12px 20px",fontSize:"15px",fontWeight:"700",display:"flex",
+             alignItems:"center",gap:"8px",justifyContent:"center",textDecoration:"none"}
+    }, "🔔 Send Overdue Reminder"));
+  }
+
+  if (s.myPhone) {
+    const ownerURL = `https://wa.me/91${s.myPhone.replace(/\D/g,"")}?text=${encodeURIComponent(msg)}`;
+    actions.appendChild(el("a", {class:"btn-wa2", href:ownerURL, target:"_blank"},
+      "📋 Send to My WhatsApp"
+    ));
+  }
+
+  if (active) {
+    actions.appendChild(el("button", {
+      class:"btn btn-green btn-full",
+      style:{fontSize:"15px"},
+      onClick:()=>{ markReturned(rental.id); }
+    }, "✅ Mark as Returned"));
+  }
+
+  actions.appendChild(el("button", {
+    class:"btn btn-ghost btn-full",
+    onClick:()=>goTo("dashboard")
+  }, "🏠 Dashboard"));
+
+  content.appendChild(actions);
+  return wrap;
+}
+
+function buildMeta(key, val, fs=14) {
+  return el("div", {},
+    el("div", {class:"bill-meta-key"}, key),
+    el("div", {class:"bill-meta-val", style:{fontSize:fs+"px"}}, val)
+  );
+}
+function buildMetaBadge(key, val, active) {
+  return el("div", {},
+    el("div", {class:"bill-meta-key"}, key),
+    el("span", {class:`badge ${active?"badge-blue":"badge-green"}`, style:{marginTop:"2px"}}, val)
+  );
+}
+
+function buildWAMessage(rental, s) {
+  const eventLabel = rental.eventType
+    ? EVENT_TYPES.find(e=>e.id===rental.eventType)?.label : null;
+  const lines = [
+    `🏺 *RENTAL BILL*`,
+    `📋 *${s.businessName}*`,
+    `━━━━━━━━━━━━━━`,
+    `👤 Name: ${rental.customerName}`,
+    `📱 Phone: ${rental.phone}`,
+    `📅 Date: ${fmt(rental.createdAt)}`,
+    eventLabel ? `🎉 Event: ${eventLabel}` : null,
+    `━━━━━━━━━━━━━━`,
+    `*ITEMS:*`,
+    ...rental.items.map(i => `• ${i.name} ×${i.qty} = ${inr(i.subtotal)}`),
+    `━━━━━━━━━━━━━━`,
+    `💰 *Total: ${inr(rental.total)}*`,
+    `📦 Status: *${rental.status}*`,
+  ].filter(Boolean);
+  if (rental.note) lines.push(`📝 Note: ${rental.note}`);
+  lines.push(`━━━━━━━━━━━━━━`);
+  lines.push(`_${s.businessName}_`);
+  return lines.join("\n");
+}
+
+function buildReminderMessage(rental, s) {
+  const days = getDaysSince(rental.createdAt);
+  return [
+    `⚠️ *Vessel Return Reminder*`,
+    `📋 *${s.businessName}*`,
+    `━━━━━━━━━━━━━━`,
+    `நம்பகமான வாடிக்கையாளர் ${rental.customerName} அவர்களே,`,
+    ``,
+    `நீங்கள் ${fmt(rental.createdAt)} அன்று வாடகைக்கு எடுத்த பாத்திரங்கள் இன்னும் திரும்பவில்லை (${days} நாட்கள்).`,
+    ``,
+    `*Items:* ${rental.items.map(i=>`${i.name}×${i.qty}`).join(", ")}`,
+    `*Amount:* ${inr(rental.total)}`,
+    `━━━━━━━━━━━━━━`,
+    `தயவுசெய்து விரைவில் திருப்பி தரவும்.`,
+    `_${s.businessName}_`,
+    s.myPhone ? `📞 ${s.myPhone}` : ""
+  ].filter(l=>l!==undefined).join("\n");
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE: RENTAL LIST
+// ════════════════════════════════════════════════════════════
+function buildRentalList() {
+  let filter = "active", search = "";
+  const wrap = el("div", {class:"page"});
+  wrap.appendChild(buildTopBar("All Rentals", ()=>goTo("dashboard")));
+
+  const content = el("div", {class:"pad"});
+  const tabsEl  = el("div", {class:"filter-tabs"});
+  const searchEl = buildInpEl("🔍 Search by name or phone...", "text", v => { search=v; rerender(); });
+  const listEl  = el("div", {});
+
+  const tabs = ["active","overdue","returned","all"];
+  const tabLabels = {active:"📦 Active", overdue:"⚠️ Overdue", returned:"✅ Done", all:"📋 All"};
+
+  function getCount(f) {
+    if (f==="overdue") return getOverdueRentals().length;
+    return f==="all" ? state.rentals.length
+         : state.rentals.filter(r => r.status===(f==="active"?"Given":"Returned")).length;
+  }
+
+  function renderTabs() {
+    tabsEl.innerHTML = "";
+    tabs.forEach(f => {
+      const btn = el("button", {
+        class:`filter-tab${filter===f?" active":""}`,
+        onClick:()=>{ filter=f; renderTabs(); rerender(); }
+      }, `${tabLabels[f]} (${getCount(f)})`);
+      tabsEl.appendChild(btn);
+    });
+  }
+
+  function rerender() {
+    listEl.innerHTML = "";
+    let filtered = state.rentals.filter(r => {
+      const overdueDays = state.settings.overdueDays||3;
+      const mf = filter==="all"
+        || (filter==="active"   && r.status==="Given")
+        || (filter==="returned" && r.status==="Returned")
+        || (filter==="overdue"  && r.status==="Given" && getDaysSince(r.createdAt)>=overdueDays);
+      const ms = !search
+        || r.customerName.toLowerCase().includes(search.toLowerCase())
+        || r.phone.includes(search);
+      return mf && ms;
+    });
+    if (filtered.length === 0) {
+      listEl.appendChild(el("div", {class:"empty"},
+        el("div", {class:"empty-icon"}, "📭"),
+        el("div", {class:"empty-title"}, "No rentals found")
+      ));
+    } else {
+      filtered.forEach(r => listEl.appendChild(buildRentalCard(r, r.status==="Given", true)));
+    }
+  }
+
+  renderTabs();
+  rerender();
+
+  content.appendChild(tabsEl);
+  content.appendChild(el("div", {style:{marginBottom:"12px"}}, searchEl));
+  content.appendChild(listEl);
+  content.appendChild(el("div", {class:"spacer"}));
+  wrap.appendChild(content);
+  return wrap;
+}
+
+function buildInpEl(placeholder, type="text", onChange, inputMode="") {
+  const i = el("input", {class:"inp", type, placeholder});
+  if (inputMode) i.setAttribute("inputmode", inputMode);
+  i.addEventListener("input", e => onChange(e.target.value));
+  return i;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE: MONTHLY REVENUE
+// ════════════════════════════════════════════════════════════
+function buildMonthly() {
+  const wrap = el("div", {class:"page"});
+  wrap.appendChild(buildTopBar("Monthly Revenue", ()=>goTo("dashboard")));
+
+  const content = el("div", {class:"pad"});
+  wrap.appendChild(content);
+
+  let viewMonth = new Date().getMonth();
+  let viewYear  = new Date().getFullYear();
+
+  const navLabel = el("div", {class:"month-nav-label"}, "");
+  const chartWrap = el("div", {class:"chart-wrap"});
+  const summaryEl = el("div", {class:"month-summary"});
+  const topItemsEl = el("div", {class:"top-items-list"});
+
+  function render() {
+    const now = new Date();
+    const monthName = new Date(viewYear, viewMonth, 1)
+      .toLocaleDateString("en-IN", {month:"long", year:"numeric"});
+    navLabel.textContent = monthName;
+
+    const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+    const monthRentals = state.rentals.filter(r => {
+      const d = new Date(r.createdAt);
+      return d.getMonth()===viewMonth && d.getFullYear()===viewYear;
+    });
+
+    // Daily revenues
+    const dailyRev = {};
+    monthRentals.forEach(r => {
+      const d = new Date(r.createdAt).getDate();
+      dailyRev[d] = (dailyRev[d]||0) + r.total;
+    });
+    const maxRev = Math.max(1, ...Object.values(dailyRev));
+
+    // Chart
+    chartWrap.innerHTML = "";
+    const bars = el("div", {class:"chart-bars"});
+    for (let d=1; d<=daysInMonth; d++) {
+      const rev = dailyRev[d]||0;
+      const h = Math.max(3, Math.round((rev/maxRev)*90));
+      const isToday = now.getDate()===d && now.getMonth()===viewMonth && now.getFullYear()===viewYear;
+      const bar = el("div", {class:`chart-bar${rev>0?" has-data":""}${isToday?" today":""}`,
+        style:{height:h+"px"},
+        title: rev>0 ? `Day ${d}: ${inr(rev)}` : ""});
+      const col = el("div", {class:"chart-bar-col"},
+        bar,
+        el("div", {class:"chart-day-label"}, d%5===0||d===1?d:"")
+      );
+      bars.appendChild(col);
+    }
+    chartWrap.appendChild(el("div", {style:{fontSize:"12px",fontWeight:"800",color:"#78716C",marginBottom:"8px"}},
+      "DAILY REVENUE CHART"));
+    chartWrap.appendChild(bars);
+    if (Object.keys(dailyRev).length > 0) {
+      const peakDay = Object.entries(dailyRev).sort((a,b)=>b[1]-a[1])[0];
+      chartWrap.appendChild(el("div", {style:{fontSize:"12px",color:"#78716C",marginTop:"6px"}},
+        `📈 Peak day: ${peakDay[0]}th – ${inr(peakDay[1])}`));
+    }
+
+    // Summary
+    const totalRev = monthRentals.reduce((s,r)=>s+r.total,0);
+    const returned = monthRentals.filter(r=>r.status==="Returned").length;
+    summaryEl.innerHTML = "";
+    summaryEl.appendChild(buildMonthStat(inr(totalRev), "Total Revenue"));
+    summaryEl.appendChild(buildMonthStat(monthRentals.length, "Total Rentals"));
+    summaryEl.appendChild(buildMonthStat(returned, "Returned"));
+    summaryEl.appendChild(buildMonthStat(
+      monthRentals.length>0 ? inr(Math.round(totalRev/monthRentals.length)) : "₹0",
+      "Avg per Rental"
+    ));
+
+    // Top items
+    const itemCount = {};
+    monthRentals.forEach(r => r.items.forEach(i => {
+      itemCount[i.name] = (itemCount[i.name]||0) + i.qty;
+    }));
+    const sorted = Object.entries(itemCount).sort((a,b)=>b[1]-a[1]);
+    const maxQty = sorted[0]?.[1] || 1;
+    topItemsEl.innerHTML = "";
+    topItemsEl.appendChild(el("div", {class:"card-title", style:{marginBottom:"10px"}}, "🏆 Most Rented Items"));
+    if (sorted.length === 0) {
+      topItemsEl.appendChild(el("div", {style:{fontSize:"13px",color:"#78716C",textAlign:"center",padding:"10px"}},
+        "No data for this month"));
+    } else {
+      sorted.slice(0,5).forEach(([name, qty]) => {
+        topItemsEl.appendChild(el("div", {class:"top-item-row"},
+          el("div", {style:{flex:1}},
+            el("div", {style:{display:"flex",justifyContent:"space-between"}},
+              el("div", {class:"top-item-name"}, name),
+              el("div", {class:"top-item-count"}, `${qty} pcs`)
+            ),
+            el("div", {class:"top-item-bar"},
+              el("div", {class:"top-item-bar-fill", style:{width:Math.round(qty/maxQty*100)+"%"}})
+            )
+          )
+        ));
+      });
+    }
+  }
+
+  function buildMonthStat(val, label) {
+    return el("div", {class:"month-stat"},
+      el("div", {class:"month-stat-val"}, String(val)),
+      el("div", {class:"month-stat-label"}, label)
+    );
+  }
+
+  const nav = el("div", {class:"month-nav"},
+    el("button", {class:"month-nav-btn", onClick:()=>{
+      viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} render();
+    }}, "‹"),
+    navLabel,
+    el("button", {class:"month-nav-btn", onClick:()=>{
+      viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} render();
+    }}, "›")
+  );
+
+  render();
+  content.appendChild(nav);
+  content.appendChild(chartWrap);
+  content.appendChild(summaryEl);
+  content.appendChild(topItemsEl);
+  content.appendChild(el("div", {class:"spacer"}));
+  return wrap;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE: CALENDAR VIEW
+// ════════════════════════════════════════════════════════════
+function buildCalendar() {
+  const wrap = el("div", {class:"page"});
+  wrap.appendChild(buildTopBar("Calendar", ()=>goTo("dashboard")));
+
+  const content = el("div", {class:"pad"});
+  wrap.appendChild(content);
+
+  const calHolder  = el("div", {});
+  const dayDetail  = el("div", {});
+  const navLabel   = el("div", {class:"month-nav-label"}, "");
+
+  function renderCal() {
+    calHolder.innerHTML = "";
+    dayDetail.innerHTML = "";
+
+    const now    = new Date();
+    const year   = state.calYear;
+    const month  = state.calMonth;
+    const monthName = new Date(year,month,1).toLocaleDateString("en-IN",{month:"long",year:"numeric"});
+    navLabel.textContent = monthName;
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysIn   = new Date(year, month+1, 0).getDate();
+
+    // Group rentals by date
+    const rentalsByDay = {};
+    state.rentals.forEach(r => {
+      const d = new Date(r.createdAt);
+      if (d.getMonth()===month && d.getFullYear()===year) {
+        const key = d.getDate();
+        if (!rentalsByDay[key]) rentalsByDay[key] = [];
+        rentalsByDay[key].push(r);
+      }
+    });
+
+    const grid = el("div", {class:"cal-grid"});
+    ["Su","Mo","Tu","We","Th","Fr","Sa"].forEach(h =>
+      grid.appendChild(el("div", {class:"cal-day-header"}, h))
+    );
+
+    // Empty cells before first day
+    for (let i=0; i<firstDay; i++) {
+      grid.appendChild(el("div", {}));
+    }
+
+    for (let d=1; d<=daysIn; d++) {
+      const isToday = now.getDate()===d && now.getMonth()===month && now.getFullYear()===year;
+      const isSel   = state.calSelDay===d;
+      const rents   = rentalsByDay[d]||[];
+      const hasAct  = rents.some(r=>r.status==="Given");
+      const hasRet  = rents.some(r=>r.status==="Returned");
+
+      let cls = "cal-day";
+      if (rents.length>0) cls += " has-rentals";
+      if (isToday) cls += " today";
+      if (isSel)   cls += " selected";
+
+      const dots = el("div", {class:"cal-dots"});
+      if (hasAct) dots.appendChild(el("div", {class:"cal-dot"}));
+      if (hasRet) dots.appendChild(el("div", {class:"cal-dot cal-dot-green"}));
+
+      const dayEl = el("div", {class:cls, onClick:()=>{
+        state.calSelDay = state.calSelDay===d ? null : d;
+        renderCal();
+      }},
+        el("div", {class:"cal-day-num"}, d),
+        dots
+      );
+      grid.appendChild(dayEl);
+    }
+    calHolder.appendChild(grid);
+
+    // Legend
+    calHolder.appendChild(el("div", {style:{display:"flex",gap:"16px",fontSize:"11px",fontWeight:"700",color:"#78716C",padding:"4px 0 8px"}},
+      el("div", {style:{display:"flex",alignItems:"center",gap:"4px"}},
+        el("div", {style:{width:"8px",height:"8px",borderRadius:"50%",background:"#EA580C"}}), "Active"),
+      el("div", {style:{display:"flex",alignItems:"center",gap:"4px"}},
+        el("div", {style:{width:"8px",height:"8px",borderRadius:"50%",background:"#16A34A"}}), "Returned")
+    ));
+
+    // Day detail
+    if (state.calSelDay && rentalsByDay[state.calSelDay]) {
+      const dayRents = rentalsByDay[state.calSelDay];
+      dayDetail.innerHTML = "";
+      const box = el("div", {class:"cal-day-rentals"},
+        el("div", {class:"cal-day-rentals-title"},
+          `RENTALS ON ${state.calSelDay} ${monthName.split(" ")[0].toUpperCase()}`)
+      );
+      dayRents.forEach(r => box.appendChild(buildRentalCard(r, false, false)));
+      dayDetail.appendChild(box);
+    }
+  }
+
+  const nav = el("div", {class:"month-nav"},
+    el("button", {class:"month-nav-btn", onClick:()=>{
+      state.calMonth--; if(state.calMonth<0){state.calMonth=11;state.calYear--;} state.calSelDay=null; renderCal();
+    }}, "‹"),
+    navLabel,
+    el("button", {class:"month-nav-btn", onClick:()=>{
+      state.calMonth++; if(state.calMonth>11){state.calMonth=0;state.calYear++;} state.calSelDay=null; renderCal();
+    }}, "›")
+  );
+
+  renderCal();
+  content.appendChild(nav);
+  content.appendChild(calHolder);
+  content.appendChild(dayDetail);
+  content.appendChild(el("div", {class:"spacer"}));
+  return wrap;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE: STOCK TRACKER
+// ════════════════════════════════════════════════════════════
+function buildStockPage() {
+  const wrap = el("div", {class:"page"});
+  wrap.appendChild(buildTopBar("Live Stock", ()=>goTo("dashboard")));
+
+  const content = el("div", {class:"pad"});
+  wrap.appendChild(content);
+
+  content.appendChild(el("div", {style:{fontSize:"13px",color:"#78716C",marginBottom:"12px",background:"#FFF7ED",borderRadius:"8px",padding:"8px 12px"}},
+    "📦 Shows available stock after active rentals. Tap ＋/− to adjust total stock."));
+
+  const prods = state.products.map(p=>({...p}));
+
+  function renderItems() {
+    itemsHolder.innerHTML = "";
+    prods.forEach((p, idx) => {
+      const avail = getEffectiveStockFor(p);
+      const pct   = Math.max(0, Math.min(100, Math.round(avail/Math.max(1,p.stock)*100)));
+      const barCls = pct>50?"high":pct>20?"mid":"low";
+
+      const countDisp = el("span", {class:"stock-count-num"}, String(p.stock));
+      const minusBtn  = el("button", {class:"stock-count-btn"}, "−");
+      const plusBtn   = el("button", {class:"stock-count-btn"}, "+");
+
+      minusBtn.addEventListener("click", ()=>{
+        prods[idx].stock = Math.max(0, prods[idx].stock-1);
+        state.products[idx].stock = prods[idx].stock;
+        DB.save("rm_products", state.products);
+        countDisp.textContent = prods[idx].stock;
+        renderItems();
+      });
+      plusBtn.addEventListener("click", ()=>{
+        prods[idx].stock++;
+        state.products[idx].stock = prods[idx].stock;
+        DB.save("rm_products", state.products);
+        countDisp.textContent = prods[idx].stock;
+        renderItems();
+      });
+
+      const item = el("div", {class:"stock-item"},
+        el("div", {class:"stock-item-header"},
+          el("div", {},
+            el("div", {class:"stock-item-name"}, p.name),
+            el("div", {style:{fontSize:"12px",color:"#78716C",marginTop:"2px"}},
+              `${avail} available · ${p.stock-avail} in use`)
+          ),
+          el("div", {class:"stock-count-ctrl"}, minusBtn, countDisp, plusBtn)
+        ),
+        el("div", {class:"stock-bar"},
+          el("div", {class:`stock-bar-fill ${barCls}`, style:{width:pct+"%"}})
+        )
+      );
+      if (avail === 0) item.style.borderColor = "#FCA5A5";
+      itemsHolder.appendChild(item);
+    });
+  }
+
+  function getEffectiveStockFor(p) {
+    const inUse = state.rentals
+      .filter(r => r.status==="Given")
+      .reduce((sum, r) => {
+        const it = r.items.find(i=>i.id===p.id);
+        return sum + (it?it.qty:0);
+      }, 0);
+    return (p.stock||0) - inUse;
+  }
+
+  const itemsHolder = el("div", {});
+  renderItems();
+  content.appendChild(itemsHolder);
+  content.appendChild(el("div", {class:"spacer"}));
+  return wrap;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE: SETTINGS
+// ════════════════════════════════════════════════════════════
+function buildSettings() {
+  const form = {...state.settings};
+  let prods  = state.products.map(p=>({...p}));
+  let adding = false;
+  let np     = {name:"",price:""};
+
+  const wrap = el("div", {class:"page"});
+  const saveBtn = el("button", {class:"topbar-action", onClick:handleSave}, "Save");
+  wrap.appendChild(buildTopBar("Settings", ()=>goTo("dashboard"), saveBtn));
+
+  const content = el("div", {class:"pad"});
+  wrap.appendChild(content);
+
+  const bizFields = [
+    ["Business Name",            "businessName", "text",   "Sri Murugan Vessel Rentals"],
+    ["Owner Name",               "ownerName",    "text",   "Your name"],
+    ["Your WhatsApp (10 digits)","myPhone",       "tel",    "9876543210"],
+    ["Address (optional)",       "address",       "text",   "Shop address"],
+  ];
+
+  const bizCard = el("div", {class:"card", style:{marginBottom:"10px"}},
+    el("div", {class:"card-title"}, "🏪 Business Info"),
+    ...bizFields.map(([label, key, type, ph]) => {
+      const input = el("input", {class:"inp", type, placeholder:ph, value:form[key]||""});
+      if (type==="tel") input.setAttribute("inputmode","numeric");
+      input.addEventListener("input", e => { form[key] = e.target.value; });
+      return el("div", {class:"field"}, el("label", {class:"lbl"}, label), input);
+    })
+  );
+  content.appendChild(bizCard);
+
+  // Overdue days setting
+  const overdueDaysInp = el("input", {class:"inp", type:"number",
+    value:form.overdueDays||3, style:{width:"80px"}});
+  overdueDaysInp.setAttribute("inputmode","numeric");
+  overdueDaysInp.addEventListener("input", e => { form.overdueDays = Number(e.target.value)||3; });
+  const overdueCard = el("div", {class:"card", style:{marginBottom:"10px"}},
+    el("div", {class:"card-title"}, "⚠️ Overdue Settings"),
+    el("div", {class:"field"},
+      el("label", {class:"lbl"}, "Mark rental as overdue after (days)"),
+      el("div", {style:{display:"flex",alignItems:"center",gap:"10px"}},
+        overdueDaysInp,
+        el("div", {style:{fontSize:"13px",color:"#78716C"}}, "days")
+      )
+    )
+  );
+  content.appendChild(overdueCard);
+
+  // Products card
+  const prodContent = el("div", {});
+  const prodCard = el("div", {class:"card", style:{marginBottom:"10px"}},
+    el("div", {style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"12px"}},
+      el("div", {class:"card-title", style:{margin:0}}, "🏺 Products & Prices"),
+      el("button", {class:"btn btn-accent btn-sm", onClick:()=>{ adding=true; renderProds(); }}, "+ Add Item")
+    ),
+    prodContent
+  );
+  content.appendChild(prodCard);
+
+  function renderProds() {
+    prodContent.innerHTML = "";
+    if (adding) {
+      const nName  = el("input", {class:"inp", placeholder:"Product name",    value:np.name,  style:{marginBottom:"8px",width:"100%"}});
+      const nPrice = el("input", {class:"inp", placeholder:"Price (₹)",       value:np.price, type:"number", style:{marginBottom:"8px",width:"100%"}});
+      const nStock = el("input", {class:"inp", placeholder:"Stock qty", value:"10", type:"number", style:{marginBottom:"8px",width:"100%"}});
+      nName.addEventListener("input",  e => np.name  = e.target.value);
+      nPrice.addEventListener("input", e => np.price = e.target.value);
+
+      prodContent.appendChild(el("div", {class:"add-prod-box"},
+        el("div", {style:{fontWeight:"700",fontSize:"13px",marginBottom:"8px"}}, "புதிய பொருள் / New Product"),
+        nName, nPrice, nStock,
+        el("div", {style:{display:"flex",gap:"8px"}},
+          el("button", {class:"btn btn-primary btn-sm", style:{flex:"1"}, onClick:()=>{
+            if (!np.name.trim() || !np.price) return;
+            prods.push({id:genId(), name:np.name.trim(), price:Number(np.price), stock:Number(nStock.value)||10, image:""});
+            np={name:"",price:""}; adding=false; renderProds();
+          }}, "சேர் / Add"),
+          el("button", {class:"btn btn-ghost btn-sm", onClick:()=>{ adding=false; renderProds(); }}, "ரத்து / Cancel")
+        )
+      ));
+    }
+
+    prods.forEach((p, i) => {
+      const tamilText = getTamilLabel(p.id) || p.name.split(" ").slice(0,2).join("\n");
+      const tamilBadge = el("div", {class:"prod-tamil", style:{width:"48px",height:"48px",flexShrink:"0"}},
+        el("div", {class:"prod-tamil-text", style:{whiteSpace:"pre-line",fontSize:"10px"}}, tamilText)
+      );
+
+      const nameInp  = el("input", {class:"inp", value:p.name, style:{marginBottom:"6px"}});
+      const priceInp = el("input", {class:"inp price-inp", type:"number", value:p.price});
+      const stockInp = el("input", {class:"inp", type:"number", value:p.stock||0,
+        style:{width:"64px",textAlign:"center"}});
+      nameInp.addEventListener("input",  e => prods[i].name=e.target.value);
+      priceInp.addEventListener("input", e => prods[i].price=Number(e.target.value)||0);
+      stockInp.addEventListener("input", e => prods[i].stock=Number(e.target.value)||0);
+
+      prodContent.appendChild(el("div", {
+        style:{background:"#FAFAF8",borderRadius:"10px",padding:"10px",marginBottom:"8px",border:"1.5px solid #E7E5E4"}},
+        el("div", {style:{display:"flex",gap:"10px",alignItems:"flex-start",marginBottom:"6px"}},
+          tamilBadge,
+          el("div", {style:{flex:1}},
+            el("label", {class:"lbl"}, "பொருளின் பெயர் / Name"),
+            nameInp
+          )
+        ),
+        el("div", {style:{display:"flex",gap:"8px",alignItems:"center"}},
+          el("div", {class:"price-wrap", style:{flex:1}},
+            el("span",{class:"price-prefix"},"₹"),
+            priceInp
+          ),
+          el("div", {style:{display:"flex",flexDirection:"column",alignItems:"center",gap:"2px"}},
+            el("span", {style:{fontSize:"10px",color:"#78716C",fontWeight:"700"}}, "Stock"),
+            stockInp
+          ),
+          el("button", {
+            class:"btn btn-sm",
+            style:{background:"#FEE2E2",color:"#DC2626",border:"none",padding:"9px 10px",flexShrink:"0"},
+            onClick:()=>{ prods.splice(i,1); renderProds(); }
+          }, "✕")
+        )
+      ));
+    });
+  }
+  renderProds();
+
+  function handleSave() {
+    state.settings = {...state.settings, ...form};
+    state.products = prods;
+    DB.save("rm_settings", state.settings);
+    DB.save("rm_products", state.products);
+    saveBtn.textContent = "✓ Saved!";
+    saveBtn.style.background = "#16A34A";
+    toast("✓ Settings saved!");
+    setTimeout(()=>{ saveBtn.textContent="Save"; saveBtn.style.background=""; }, 2000);
+  }
+
+  const saveBtnBottom = el("button", {
+    class:"btn btn-primary btn-full",
+    style:{marginBottom:"24px",fontSize:"16px",borderRadius:"12px",padding:"13px 20px"},
+    onClick:handleSave
+  }, "💾 Save All Changes");
+  content.appendChild(saveBtnBottom);
+
+  return wrap;
+}
+
+// ════════════════════════════════════════════════════════════
+//  SHARED: TOP BAR
+// ════════════════════════════════════════════════════════════
+function buildTopBar(title, onBack, rightEl=null) {
+  const bar = el("div", {class:"topbar no-print"});
+  if (onBack) bar.appendChild(el("button", {class:"topbar-back", onClick:onBack}, "‹"));
+  bar.appendChild(el("div", {class:"topbar-title"}, title));
+  if (rightEl) bar.appendChild(rightEl);
+  return bar;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PAGE ROUTER
+// ════════════════════════════════════════════════════════════
+function buildPage(page) {
+  switch(page) {
+    case "dashboard": return buildDashboard();
+    case "new":       return buildNewRental();
+    case "bill":      return buildBillPage();
+    case "list":      return buildRentalList();
+    case "settings":  return buildSettings();
+    case "monthly":   return buildMonthly();
+    case "calendar":  return buildCalendar();
+    case "stock":     return buildStockPage();
+    default:          return buildDashboard();
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════════
+render();
+</script>
+</body>
+</html>
